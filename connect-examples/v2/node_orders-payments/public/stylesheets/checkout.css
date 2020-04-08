@@ -170,6 +170,13 @@ input[type=radio]:checked + .time-option{
     color: var(--white);
     border: none;
 }
+
+.error-message {
+    color: red;
+    font-size: 12px;
+    margin: 4px 4px;
+}
+
 .card-details {
     color: var(--placeholder-gray);
     font-size: 16px;
@@ -183,4 +190,16 @@ input[type=radio]:checked + .time-option{
 }
 .input--validity-visible:invalid {
     background-color: var(--warning);
+}
+
+.reward-button {
+    color: var(--neutral-gray);
+    background-color: var(--white);
+    border-color: var(--green);
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.reward-button:last-child {
+    margin-bottom: 0px;
 }

@@ -15,8 +15,9 @@ limitations under the License.
 */
 
 const express = require("express");
+const url = require("url");
 const { randomBytes } = require("crypto");
-const { config, retrieveOrderAndLocation, orderInstance, paymentInstance } = require("../util/square-connect-client");
+const { config, retrieveOrderAndLocation, orderInstance, paymentInstance, loyaltyInstance } = require("../util/square-connect-client");
 const DeliveryPickUpTimes = require("../models/delivery-pickup-times");
 
 const router = express.Router();
@@ -259,7 +260,7 @@ router.post("/add-delivery-details", async (req, res, next) => {
  *  location_id: Id of the location that the order belongs to
  */
 router.get("/payment", async (req, res, next) => {
-  const { order_id, location_id } = req.query;
+  const { order_id, location_id, loyalty_account_id, redeemed } = req.query;
   try {
     const { order_info, location_info } = await retrieveOrderAndLocation(order_id, location_id);
     if (!order_info.hasFulfillments) {
@@ -267,10 +268,49 @@ router.get("/payment", async (req, res, next) => {
       res.redirect(`/checkout/choose-delivery-pickup?order_id=${order_id}&location_id=${location_id}`);
     }
 
+    console.log("order info:");
+    console.log( order_info.order );
+
+    const loyalty_info = {};
+    const { programs } = await loyaltyInstance.listLoyaltyPrograms();
+    console.log("programs info:");
+    console.log(programs);
+    if (programs && programs[0] && redeemed !== "1") {
+      loyalty_info.program_active = true;
+      if (loyalty_account_id) {
+        try {
+          const { loyalty_account } = await loyaltyInstance.retrieveLoyaltyAccount(loyalty_account_id);
+          if (loyalty_account) {
+            loyalty_info.loyalty_account_id = loyalty_account_id;
+            const program = programs[0];
+            loyalty_info.available_reward_tiers = [];
+            for (const reward_tier of program.reward_tiers) {
+              if (reward_tier.points <= loyalty_account.balance) {
+                loyalty_info.available_reward_tiers.push(reward_tier);
+              }
+            }
+            console.log("available_reward_tiers:\n");
+            console.log(loyalty_info.available_reward_tiers);
+            console.log("loyalty_acount:");
+            console.log(loyalty_account);
+          }
+        } catch (error) {
+          if (error.status === 404) {
+            loyalty_info.account_not_found = true;
+          } else {
+            throw error;
+          }
+        }
+      }
+    } else {
+      loyalty_info.program_active = false;
+    }
+
     res.render("checkout/payment", {
       application_id: config.squareApplicationId,
       order_info,
-      location_info
+      location_info,
+      loyalty_info,
     });
   }
   catch (error) {
@@ -309,6 +349,86 @@ router.post("/payment", async (req, res, next) => {
 
     // redirect to order confirmation page once the order is paid
     res.redirect(`/order-confirmation?order_id=${order.id}&location_id=${order.location_id}`);
+  }
+  catch (error) {
+    next(error);
+  }
+});
+
+
+
+/**
+ * Matches: POST /checkout/add-loyalty-account/
+ *
+ * Description:
+ *  Take the payment infomration that are submitted from the /checkout/payment page,
+ *  then call payment api to pay the order
+ *
+ *  You learn more about the CreatePayment endpoint here:
+ *  https://developer.squareup.com/reference/square/payments-api/create-payment
+ *
+ * Request Body:
+ *  order_id: Id of the order to be updated
+ *  location_id: Id of the location that the order belongs to
+ *  nonce: Card nonce (a secure single use token) created by the Square Payment Form
+ */
+router.post("/add-loyalty-account", async (req, res, next) => {
+  const { order_id, location_id, phone_number } = req.body;
+  try {
+    const formated_phone_number = `+1${phone_number}`;
+    const { loyalty_accounts } = await loyaltyInstance.searchLoyaltyAccounts({
+      query: {
+        mappings: [
+          {
+            type: "PHONE",
+            value: formated_phone_number
+          }
+        ]
+      }
+    });
+    const current_loyalty_account = loyalty_accounts && loyalty_accounts[0];
+    console.log(current_loyalty_account);
+    // Get the referrer path and redirect back with the loyalty account id
+    const referrer_path = url.parse(req.get("referrer")).pathname;
+    res.redirect(`${referrer_path}?order_id=${order_id}&location_id=${location_id}&loyalty_account_id=${current_loyalty_account && current_loyalty_account.id}`);
+  }
+  catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * Matches: POST /checkout/redeem-loyalty-reward/
+ *
+ * Description:
+ *  Take the payment infomration that are submitted from the /checkout/payment page,
+ *  then call payment api to pay the order
+ *
+ *  You learn more about the CreatePayment endpoint here:
+ *  https://developer.squareup.com/reference/square/payments-api/create-payment
+ *
+ * Request Body:
+ *  order_id: Id of the order to be updated
+ *  location_id: Id of the location that the order belongs to
+ *  nonce: Card nonce (a secure single use token) created by the Square Payment Form
+ */
+router.post("/redeem-loyalty-reward", async (req, res, next) => {
+  const { order_id, location_id, loyalty_account_id, reward_tier_id } = req.body;
+  try {
+    const { reward } = await loyaltyInstance.createLoyaltyReward({
+      reward: {
+        order_id,
+        loyalty_account_id,
+        reward_tier_id,
+      },
+      idempotency_key: randomBytes(45).toString("hex").slice(0, 45), // Unique identifier for request that is under 46 characters
+    });
+
+    console.log("reward:");
+    console.log(reward);
+    // Get the referrer path and redirect back with the loyalty account id
+    const referrer_path = url.parse(req.get("referrer")).pathname;
+    res.redirect(`${referrer_path}?order_id=${order_id}&location_id=${location_id}&loyalty_account_id=${loyalty_account_id}&redeemed=1`);
   }
   catch (error) {
     next(error);

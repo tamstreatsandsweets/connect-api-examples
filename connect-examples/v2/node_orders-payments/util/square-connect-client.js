@@ -34,6 +34,7 @@ const catalogInstance = new SquareConnect.CatalogApi();
 const locationInstance = new SquareConnect.LocationsApi();
 const orderInstance = new SquareConnect.OrdersApi();
 const paymentInstance = new SquareConnect.PaymentsApi();
+const loyaltyInstance = new SquareConnect.LoyaltyApi();
 
 /**
  * Description:
@@ -60,11 +61,11 @@ async function retrieveOrderAndLocation(order_id, location_id) {
 // Makes API instances and util functions importable
 module.exports = {
   config,
-  SquareConnect,
   catalogInstance,
   locationInstance,
   paymentInstance,
   orderInstance,
+  loyaltyInstance,
   retrieveOrderAndLocation,
 };
 
