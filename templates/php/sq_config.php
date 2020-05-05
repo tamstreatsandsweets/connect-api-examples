@@ -19,7 +19,7 @@ require_once 'vendor/autoload.php';
 /**
 * Your Square sandbox location ID
 * Used to make test calls against the Square sandbox
-* REPLACE_ME = a sandbox location ID from the application Locations tab
+* BXEVKYK40K02J = a sandbox location ID from the application Locations tab
 */
 if (!defined('_SQ_SANDBOX_LOCATION_ID')) {
   define('_SQ_SANDBOX_LOCATION_ID', "REPLACE_ME") ;
@@ -28,7 +28,7 @@ if (!defined('_SQ_SANDBOX_LOCATION_ID')) {
 /**
 * Your Square sandbox token
 * Used to make test calls against the Square sandbox
-* REPLACE_ME = a sandbox access token from the application Credentials tab
+* EAAAEA5HqsHIvivEBSIx2_hpUtWNLj36ub_A08Hwy8hiC_JjisZjqdhnHzFtkSmr = a sandbox access token from the application Credentials tab
 */
 if (!defined('_SQ_SANDBOX_TOKEN')) {
     define('_SQ_SANDBOX_TOKEN', "REPLACE_ME") ;
@@ -37,7 +37,7 @@ if (!defined('_SQ_SANDBOX_TOKEN')) {
 /**
 * Your Square sandbox application ID
 * Used to make test calls against the Square sandbox
-* REPLACE_ME = a sandbox application ID from the application Credentials tab
+* sandbox-sq0idb--bS3Z9mbkcBs-InUT87YUA = a sandbox application ID from the application Credentials tab
 */
 if (!defined('_SQ_SANDBOX_APP_ID')) {
     define('_SQ_SANDBOX_APP_ID', "REPLACE_ME") ;
@@ -45,7 +45,7 @@ if (!defined('_SQ_SANDBOX_APP_ID')) {
 
 /**
 * Your Square SANDBOX environment application secret
-* REPLACE_ME = an application secret from the SANDBOX environment application
+* sandbox-sq0csb-n_E2bL50Mxgm3ut32pxBBZqlNtu8xfMOUhHL_ZpGYoE = an application secret from the SANDBOX environment application
 * OAuth tab
 */
 if (!defined('_SQ_SANDBOX_APP_SECRET')) {
@@ -63,7 +63,7 @@ if (!defined('_SQ_SANDBOX_DOMAIN')) {
 /**
 * Your Square production location ID
 * Used to make test calls against the Square production environment
-* REPLACE_ME = a location ID from the application Locations tab
+* BXEVKYK40K02J = a location ID from the application Locations tab
 */
 if (!defined('_SQ_LOCATION_ID')) {
   define('_SQ_LOCATION_ID', "REPLACE_ME") ;
@@ -71,7 +71,7 @@ if (!defined('_SQ_LOCATION_ID')) {
 
 /**
 * Your Square application ID
-* REPLACE_ME = an application ID from the application Credentials tab
+* sandbox-sq0idb--bS3Z9mbkcBs-InUT87YUA = an application ID from the application Credentials tab
 */
 if (!defined('_SQ_APP_ID')) {
     define('_SQ_APP_ID', "REPLACE_ME") ;
@@ -79,7 +79,7 @@ if (!defined('_SQ_APP_ID')) {
 
 /**
 * Your Square application secret
-* REPLACE_ME = an application secrete from the application OAuth tab
+* sandbox-sq0csb-n_E2bL50Mxgm3ut32pxBBZqlNtu8xfMOUhHL_ZpGYoE = an application secrete from the application OAuth tab
 */
 if (!defined('_SQ_APP_SECRET')) {
     define('_SQ_APP_SECRET', "REPLACE_ME") ;
@@ -88,7 +88,7 @@ if (!defined('_SQ_APP_SECRET')) {
 /**
 * Your Square production token
 * Used to make test calls against the Square production environment
-* REPLACE_ME = a production access token from the application Credentials tab
+* EAAAEA5HqsHIvivEBSIx2_hpUtWNLj36ub_A08Hwy8hiC_JjisZjqdhnHzFtkSmr = a production access token from the application Credentials tab
 */
 if (!defined('_SQ_TOKEN')) {
   define('_SQ_TOKEN', "REPLACE_ME") ;
